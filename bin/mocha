@@ -16,8 +16,11 @@ var args = [path.join(__dirname, '_mocha')];
 // Must be loaded here to handle node-specific options
 getOptions();
 
+var execPath = process.execPath;
 process.argv.slice(2).forEach(function (arg) {
-  var flag = arg.split('=')[0];
+  var parts = arg.split('=');
+  var flag = parts[0];
+  var value = parts[1];
 
   switch (flag) {
     case '-d':
@@ -48,6 +51,9 @@ process.argv.slice(2).forEach(function (arg) {
     case '--perf-basic-prof':
       args.unshift(arg);
       break;
+    case '--exec-path':
+      execPath = value;
+      break;
     default:
       if (arg.indexOf('--harmony') === 0) {
         args.unshift(arg);
@@ -66,7 +72,7 @@ process.argv.slice(2).forEach(function (arg) {
   }
 });
 
-var proc = spawn(process.execPath, args, { stdio: 'inherit' });
+var proc = spawn(execPath, args, { stdio: 'inherit' });
 proc.on('exit', function (code, signal) {
   process.on('exit', function () {
     if (signal) {
